@@ -3,19 +3,31 @@ package com.javaex.http;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
-public class ListAsyncTask extends AsyncTask< String, String, Void>{
-
+public class ListAsyncTask extends AsyncTask< Void, Integer, List<GuestbookVo>>{
+    //제일 처음
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
     }
 
+
     @Override
-    protected Void doInBackground(String... strings) {
+    protected List<GuestbookVo> doInBackground(Void... voids) {
+
+        //리턴값으로 보내기 때문에 null로 만든다.
+        List<GuestbookVo> guestbookList = null;
 
         //서버에 연결 한다.
         //요청을 한다.
@@ -35,10 +47,39 @@ public class ListAsyncTask extends AsyncTask< String, String, Void>{
 
             if(resCode == 200){ //정상이면
 
-
                 //Stream 을 통해 통신한다
                 //데이타 형식은 json으로 한다.
+                InputStream is = conn.getInputStream();
+                //문자열로 변환
+                InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+                //읽어야 됨
+                BufferedReader br = new BufferedReader(isr);
 
+
+                //읽어오셈
+                //한줄씩 읽어옴 -> 반복해서 읽어와야되니까 반복문 ㄱ
+                //라인이 null이면 끝내셈
+                String jsonData = "";
+                while (true){
+
+                    String line = br.readLine();
+
+                    if(line == null){
+                        break;
+                    }
+
+                    jsonData = jsonData + line;
+                    //jsonData += line;
+                }
+
+                //json --> 자바객체로 만든다.
+                //Log.d("javaStudy", "jsonData = " + jsonData);
+                Gson gson = new Gson();
+                guestbookList = gson.fromJson(jsonData, new TypeToken<List<GuestbookVo>>(){}.getType());
+
+
+                //Log.d("javaStudy", "size = " + guestbookList.size());
+                //Log.d("javaStudy", "index(0).name = " + guestbookList.get(0).getName());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -48,22 +89,22 @@ public class ListAsyncTask extends AsyncTask< String, String, Void>{
 
 
         //응답을 받는다.(데이터를 받는다(문자열)) -> guestbooklist 받아야함 -> json형태로 온다 -> java객체로 변환(List<GuestbookVo> guestbookVo)
+        return guestbookList;
 
-        return null;
     }
 
-    //진행상태 알려주는 메소드(몇%됐는지)
+
     @Override
-    protected void onProgressUpdate(String... values) {
+    protected void onProgressUpdate(Integer... values) {
         super.onProgressUpdate(values);
     }
 
-    //끝나고
+
     @Override
-    protected void onPostExecute(Void unused) {
-        super.onPostExecute(unused);
+    protected void onPostExecute(List<GuestbookVo> guestbookList) {
+        Log.d("javaStudy", "size = " + guestbookList.size());
+        Log.d("javaStudy", "index(0).name = " + guestbookList.get(0).getName());
+
+        super.onPostExecute(guestbookList);
     }
-
-
-
 }
