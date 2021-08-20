@@ -102,6 +102,7 @@ public class ListAsyncTask extends AsyncTask< Void, Integer, List<GuestbookVo>>{
 
     @Override
     protected void onPostExecute(List<GuestbookVo> guestbookList) {
+        Log.d("javaStudy", "onPostExecute");
         Log.d("javaStudy", "size = " + guestbookList.size());
         Log.d("javaStudy", "index(0).name = " + guestbookList.get(0).getName());
 
