@@ -31,6 +31,7 @@ public class ListAsyncTask extends AsyncTask< Void, Integer, List<GuestbookVo>>{
 
         //서버에 연결 한다.
         //요청을 한다.
+        //http://221.146.110.204:8088
         try {
             URL url = new URL("http://221.146.110.204:8088/mysite5/api/guestbook/list");  //url 생성 -> 없는주소 치면 resCode는 에러코드랑 숫자 똑같이 뜸.
 
